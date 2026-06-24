@@ -190,6 +190,21 @@ ai-factory/
 └── LICENSE                # MIT License
 ```
 
+## Architecture Decisions
+
+See [DECISIONS.md](DECISIONS.md) for Architectural Decision Records (ADR):
+
+| ADR | Decision |
+|-----|----------|
+| ADR-001 | SQLAlchemy with AsyncIO for persistence |
+| ADR-002 | Auto-init DB via Docker entrypoint |
+| ADR-003 | Markdown-based skill system (SKILL.md) |
+| ADR-004 | Multi-agent orchestration via delegate_task |
+| ADR-005 | PostgreSQL as primary database |
+| ADR-006 | Redis for caching and message broker |
+| ADR-007 | FastAPI for REST API |
+| ADR-008 | Structured logging with structlog |
+
 ## Workers
 
 ### HERMES — Orchestrator

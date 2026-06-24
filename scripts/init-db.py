@@ -1,52 +1,61 @@
 #!/usr/bin/env python3
 """
 Database initialization script.
-Creates all tables and indexes on first run.
+Creates all tables if they don't exist.
 Safe to run multiple times (idempotent).
+
+Priority:
+1. Run Alembic migrations (if alembic.ini exists)
+2. Fallback: create_all from models
 """
 import asyncio
-import sys
+import importlib
 import os
+import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy import text
 
-# Import all models so SQLAlchemy knows about them
-from persistence.models import Base
+async def run_alembic():
+    """Try to run Alembic migrations."""
+    try:
+        alembic_config = importlib.import_module("alembic.config")
+        alembic_command = importlib.import_module("alembic")
+        cfg = alembic_config.Config("alembic.ini")
+        alembic_command.command.upgrade(cfg, "head")
+        print("  Alembic migrations applied successfully")
+        return True
+    except Exception as e:
+        print(f"  Alembic not available ({e})")
+        return False
 
 
-async def init_db(database_url: str = None):
-    """Create all tables if they don't exist."""
-    database_url = database_url or os.getenv(
+async def init_db():
+    """Initialize database tables."""
+    database_url = os.getenv(
         "DATABASE_URL",
         "sqlite+aiosqlite:///ai-factory.db"
     )
 
-    engine = create_async_engine(database_url, echo=True)
+    # Try Alembic first
+    alembic_ok = await run_alembic()
 
-    async with engine.begin() as conn:
-        # Create all tables from models
-        await conn.run_sync(Base.metadata.create_all)
+    if not alembic_ok:
+        # Fallback: create_all from models
+        from sqlalchemy.ext.asyncio import create_async_engine
+        from sqlalchemy import text
+        from persistence.models import Base
 
-        # Verify tables exist
-        if "postgresql" in database_url:
-            result = await conn.execute(text(
-                "SELECT tablename FROM pg_tables WHERE schemaname = 'public'"
-            ))
-            tables = [row[0] for row in result]
-        else:
-            result = await conn.execute(text(
-                "SELECT name FROM sqlite_master WHERE type='table'"
-            ))
-            tables = [row[0] for row in result]
+        echo = os.getenv("DB_ECHO", "false").lower() == "true"
+        engine = create_async_engine(database_url, echo=echo)
 
-    await engine.dispose()
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
 
-    print(f"✅ Database initialized: {len(tables)} tables")
-    for t in sorted(tables):
-        print(f"   - {t}")
+        await engine.dispose()
+        print("  Tables created via create_all")
+
+    print("Database initialized successfully")
 
 
 if __name__ == "__main__":

@@ -8,6 +8,7 @@ from typing import Optional, List
 from sqlalchemy import (
     String, Integer, Float, Boolean, DateTime, Text, ForeignKey, JSON
 )
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -28,7 +29,7 @@ class Worker(Base):
     current_tasks: Mapped[int] = mapped_column(Integer, default=0)
     total_completed: Mapped[int] = mapped_column(Integer, default=0)
     last_active: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
-    config: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    config: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     tasks: Mapped[List["Task"]] = relationship(back_populates="worker")
@@ -54,7 +55,7 @@ class Task(Base):
     )
     progress: Mapped[float] = mapped_column(Float, default=0.0)
     result: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    metadata_json: Mapped[Optional[dict]] = mapped_column(JSON, nullable=True)
+    metadata_json: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     started_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
     completed_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)

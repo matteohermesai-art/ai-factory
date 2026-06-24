@@ -143,4 +143,20 @@ This document records important architectural decisions made for AI Factory.
 
 ---
 
+## ADR-009: Alembic for Database Migrations
+
+**Date**: 2025-06-24
+**Status**: Accepted
+**Context**: `init-db.py` with `create_all` works for initial setup but cannot handle schema evolution. Need a migration system for production deployments.
+
+**Decision**: Add Alembic for schema migrations. `init-db.py` tries Alembic first, falls back to `create_all` for backward compatibility.
+
+**Consequences**:
+- Schema changes via migration scripts
+- Version-controlled database evolution
+- `create_all` still works as fallback for fresh installs
+- Migration scripts in `alembic/versions/`
+
+---
+
 *Last updated: 2025-06-24*

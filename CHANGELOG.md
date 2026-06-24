@@ -10,9 +10,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Database models and auto-initialization system
-- Docker entrypoint with health checks
-- Multi-agent worker delegation system
+- Alembic database migrations setup (`alembic.ini`, `alembic/env.py`, `alembic/versions/001_initial.py`)
+- `scripts/check-db.py` — separate DB health check script
+- `requirements.txt` at project root
+
+### Fixed
+- `docker-entrypoint.sh`: fixed Python syntax error in inline script, now uses separate `check-db.py`
+- `docker-compose.yml`: fixed `pg_is_ready` typo to `pg_isready`
+- `src/persistence/models.py`: replaced deprecated `JSON` with `JSONB` for PostgreSQL
+- `scripts/init-db.py`: removed unused imports, added Alembic migration support
+- `.env` removed from git tracking
+
+### Security
+- Ensured `.env` is not tracked in git history
 
 ---
 

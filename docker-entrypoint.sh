@@ -8,21 +8,7 @@ echo "AI Factory API starting..."
 
 # Wait for database to be ready
 echo "Waiting for database..."
-until python -c "
-import asyncio, os, sys
-sys.path.insert(0, '/app/src')
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine
-
-async def check():
-    url = os.getenv('DATABASE_URL', 'sqlite+aiosqlite:///ai-factory.db')
-    engine = create_async_engine(url)
-    async with engine.begin() as conn:
-        await conn.execute(text('SELECT 1'))
-    await engine.dispose()
-
-asyncio.run(check())
-" 2>/dev/null; do
+until python scripts/check-db.py 2>/dev/null; do
     echo "Database not ready, retrying in 2s..."
     sleep 2
 done
