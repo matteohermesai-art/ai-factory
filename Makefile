@@ -13,9 +13,8 @@ help: ## Show this help
 up: ## Start all services
 	docker-compose up -d --build
 	@echo "Services started:"
-	@echo "  Neon City API  -> http://localhost:8000/docs"
-	@echo "  Factory API    -> http://localhost:8080/docs"
-	@echo "  Dashboard      -> http://localhost:3000"
+	@echo "  API      -> http://localhost:8000/docs"
+	@echo "  Factory  -> http://localhost:8080/docs"
 
 down: ## Stop all services
 	docker-compose down
@@ -30,38 +29,38 @@ status: ## Show service status
 
 # Database
 init-db: ## Initialize database and run migrations
-	docker-compose exec neon-city-api alembic upgrade head
+	docker-compose exec api alembic upgrade head
 	@echo "Database initialized"
 
 seed: ## Seed database with initial data
-	docker-compose exec neon-city-api python scripts/seed.py
+	docker-compose exec api python scripts/seed.py
 	@echo "Database seeded"
 
 shell: ## Open shell in API container
-	docker-compose exec neon-city-api bash
+	docker-compose exec api bash
 
 # Development
 test: ## Run test suite
-	cd neon-city && pytest tests/ -v --tb=short
+	pytest tests/ -v --tb=short
 
 test-cov: ## Run tests with coverage
-	cd neon-city && pytest tests/ --cov=src --cov-report=html --cov-report=term
+	pytest tests/ --cov=src --cov-report=html --cov-report=term
 
 lint: ## Lint and check formatting
-	cd neon-city && ruff check src/ tests/
-	cd neon-city && black --check src/ tests/
-	cd neon-city && mypy src/
+	ruff check src/ tests/
+	black --check src/ tests/
+	mypy src/
 
 format: ## Auto-format code
-	cd neon-city && black src/ tests/
-	cd neon-city && ruff check --fix src/ tests/
+	black src/ tests/
+	ruff check --fix src/ tests/
 
 # Simulation
 simulate: ## Run simulation (local)
-	cd neon-city && python -m src.main
+	python -m src.main
 
 simulate-ultra: ## Run 100k tick simulation (background)
-	cd neon-city && nohup python scripts/run_simulation.py --ticks 100000 --agents 200 > /home/orin/ai-factory/logs/sim_$(date +%Y%m%d_%H%M%S).log 2>&1 &
+	nohup python scripts/run_simulation.py --ticks 100000 --agents 200 > logs/sim_$$(date +%Y%m%d_%H%M%S).log 2>&1 &
 	@echo "Simulation started in background. PID: $$!"
 
 # Cleanup

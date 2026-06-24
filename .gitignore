@@ -52,3 +52,6 @@ Thumbs.db
 
 # Docker volumes
 docker-volumes/
+
+# Neon City (separate repo)
+neon-city/

@@ -1,11 +1,11 @@
-# 🏭 AI Factory — Startup Guide
+# AI Factory - Startup Guide
 
 Welcome to AI Factory. This guide gets you up and running.
 
 ## Prerequisites
 
 - Python 3.11+
-- Docker & Docker Compose v2
+- Docker and Docker Compose v2
 - 4GB+ RAM available
 
 ## First Run
@@ -34,26 +34,25 @@ curl http://localhost:8080/health
 
 ```
 ai-factory/
-├── neon-city/           # 🏙️ Simulation engine
-│   ├── src/             # Source code
-│   ├── tests/           # Test suite
-│   ├── scripts/         # Utility scripts
-│   ├── alembic/         # DB migrations
-│   └── Dockerfile
-│
-├── agents/              # 🤖 Agent configs
-│   ├── AGENT_CONFIGS.md # All agent docs
-│   ├── SCITHERON.md     # Python expert
-│   └── PAVARD.md        # Swift expert
-│
-├── factory-api/         # 🌐 Orchestrator API
-├── skills/              # 🎯 Hermes skills
-│   └── HERMES_SETUP.md  # Post-install prompt
-│
-├── infra/               # 🔧 Infrastructure
-│   └── DOCKER.md        # Docker guide
-│
-├── workspace/           # 🧠 Agent workspaces
+├── src/                   # Source code
+│   ├── engine/            # Grid, world, tick, replay
+│   ├── agents/            # Citizen, hacker, police, corporation
+│   ├── economy/           # Market, currency, transactions
+│   ├── events/            # Event bus, generators
+│   ├── api/               # FastAPI app and routes
+│   ├── persistence/       # Database models
+│   ├── logging/           # Structured logging
+│   └── worker/            # Background scheduler
+├── agents/                # Agent configuration files
+│   ├── AGENT_CONFIGS.md   # All agent docs
+│   ├── SCITHERON.md       # Python expert
+│   └── PAVARD.md          # Swift expert
+├── factory-api/           # REST API orchestrator
+├── skills/                # Hermes skills
+│   └── HERMES_SETUP.md    # Post-install prompt
+├── infra/                 # Infrastructure
+│   └── DOCKER.md          # Docker guide
+├── workspace/             # Agent workspaces
 ├── docker-compose.yml
 ├── Dockerfile
 ├── Makefile
@@ -66,7 +65,7 @@ ai-factory/
 
 | Agent | Role | Workspace |
 |-------|------|-----------|
-| **Hermes** | AI Assistant & Orchestrator | `workspace/hermes/` |
+| **Hermes** | AI Assistant and Orchestrator | `workspace/hermes/` |
 | **SCITHERON** | Python Simulation Engineer | `workspace/scitheron/` |
 | **PAVARD** | Full-Stack Swift Developer | `workspace/pavard/` |
 
@@ -130,11 +129,10 @@ See `.env.example` for all options. Key ones:
 
 ## Next Steps
 
-1. Read `neon-city/README.md` for simulation details
-2. Read `agents/AGENT_CONFIGS.md` for agent configuration
-3. Read `infra/DOCKER.md` for infrastructure guide
-4. Check `skills/HERMES_SETUP.md` for Hermes setup
+1. Read `agents/AGENT_CONFIGS.md` for agent configuration
+2. Read `infra/DOCKER.md` for infrastructure guide
+3. Check `skills/HERMES_SETUP.md` for Hermes setup
 
 ---
 
-🌃 **Welcome to the future. The factory is online.**
+Welcome to the future. The factory is online.

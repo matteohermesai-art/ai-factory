@@ -31,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Professional documentation: README, CHANGELOG, CONTRIBUTING, LICENSE
 - Agent configuration files with runtime configs
 - Hermes skill definitions (9 skills)
+- Multi-stage Dockerfile with healthcheck
+- docker-compose with 5 services
 
 ### Performance
 - 126 tick/sec with 200 agents
@@ -42,8 +44,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release
 - Single-agent worker system
-- Basic neon-city simulation (100x100 grid, 4 agent types)
+- Basic simulation engine (100x100 grid, 4 agent types)
 - Economy with credits and data currencies
-- Event system with cyber attacks and police raids
+- Event system
 - REST API
 - Test suite with pytest

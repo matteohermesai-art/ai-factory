@@ -4,7 +4,7 @@ A multi-agent simulation framework for building, deploying, and orchestrating au
 
 ## Highlights
 
-Orchestrate 200+ autonomous agents in a cyberpunk city simulation with full economy, skill trees, events, legal system, and REST API — all containerized with Docker.
+Orchestrate autonomous agents with full simulation engine, skill trees, events, REST API, and Docker infrastructure — all containerized and production-ready.
 
 ## Architecture
 
@@ -13,16 +13,16 @@ Orchestrate 200+ autonomous agents in a cyberpunk city simulation with full econ
                             |
             +---------------+---------------+
             |                               |
-    Neon City API                   Factory API
-    (Simulation Engine)             (Orchestrator)
+    Simulation API                   Factory API
+    (Workers)                        (Orchestrator)
             |                               |
     +-------+-------+               +-------+-------+
     |       |       |               |       |       |
   Grid   Events  Economy        Workers  Tasks  Cron
   World   Bus     Market          |              |
-    |       |       |           SCITHERON      Scheduler
-  Agents  Logging  Market        PAVARD
-  (200+)  structlog HERMES
+    |       |       |          SCITHERON      Scheduler
+  Agents  Logging  Data         PAVARD
+  (200+)  structlog              HERMES
 ```
 
 ### Agent Types
@@ -59,8 +59,8 @@ make up
 
 # Or local
 source venv/bin/activate
-pip install -r neon-city/requirements.txt
-cd neon-city && python -m src.main
+pip install -r requirements.txt
+python -m src.main
 ```
 
 ## Available Commands
@@ -121,36 +121,33 @@ Interactive API docs at `http://localhost:8000/docs`.
 
 ```
 ai-factory/
-├── neon-city/           # Simulation engine (78 Python files)
-│   ├── src/             # Source code
-│   │   ├── engine/      # Grid, world, tick, replay
-│   │   ├── agents/      # Citizen, hacker, police, corporation
-│   │   ├── economy/     # Market, currency, transactions
-│   │   ├── events/      # Event bus, generators
-│   │   ├── api/         # FastAPI app and routes
-│   │   ├── persistence/ # Database models
-│   │   ├── logging/     # Structured logging
-│   │   └── worker/      # Background scheduler
-│   ├── tests/           # Test suite (pytest)
-│   ├── alembic/         # Database migrations
-│   └── scripts/         # Utility scripts
-├── agents/              # Agent configuration files
-│   ├── SCITHERON.md     # Python developer
-│   ├── PAVARD.md        # Swift developer
-│   ├── HERMES.md        # AI orchestrator
-│   └── AGENT_CONFIGS.md # All agent docs
-├── skills/              # Hermes skills
-├── infra/               # Infrastructure docs
-├── docker-compose.yml   # Full stack
-├── Dockerfile           # Multi-stage build
-├── Makefile             # Build targets
-├── pyproject.toml       # Project configuration
-├── requirements.txt     # Dependencies
-├── .env.example         # Environment template
-├── README.md            # This file
-├── CHANGELOG.md         # Version history
-├── CONTRIBUTING.md      # Contribution guidelines
-└── LICENSE              # MIT License
+├── src/                   # Source code
+│   ├── engine/            # Grid, world, tick, replay
+│   ├── agents/            # Citizen, hacker, police, corporation
+│   ├── economy/           # Market, currency, transactions
+│   ├── events/            # Event bus, generators
+│   ├── api/               # FastAPI app and routes
+│   ├── persistence/       # Database models
+│   ├── logging/           # Structured logging
+│   └── worker/            # Background scheduler
+├── agents/                # Agent configuration files
+│   ├── SCITHERON.md       # Python developer
+│   ├── PAVARD.md          # Swift developer
+│   ├── HERMES.md          # AI orchestrator
+│   └── AGENT_CONFIGS.md   # All agent docs
+├── skills/                # Hermes skills
+├── infra/                 # Infrastructure docs
+├── tests/                 # Test suite (pytest)
+├── scripts/               # Utility scripts
+├── docker-compose.yml     # Full stack
+├── Dockerfile             # Multi-stage build
+├── Makefile               # Build targets
+├── pyproject.toml         # Project configuration
+├── .env.example           # Environment template
+├── README.md              # This file
+├── CHANGELOG.md           # Version history
+├── CONTRIBUTING.md        # Contribution guidelines
+└── LICENSE                # MIT License
 ```
 
 ## Contributing
@@ -164,7 +161,3 @@ See [CHANGELOG.md](CHANGELOG.md) for version history.
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
-
-## Acknowledgments
-
-Inspired by cyberpunk fiction and multi-agent simulation research.

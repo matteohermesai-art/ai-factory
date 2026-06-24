@@ -21,7 +21,7 @@ cd ai-factory
 # 2. Set up development environment
 python -m venv venv
 source venv/bin/activate
-pip install -r neon-city/requirements.txt
+pip install -r requirements.txt
 pip install -e ".[dev]"
 
 # 3. Create feature branch
@@ -44,7 +44,6 @@ git push origin feature/your-feature-name
 | `refactor/` | Code refactoring |
 | `test/` | Test additions/improvements |
 | `infra/` | Infrastructure/CI changes |
-| `changelog/` | Changelog updates |
 
 ### Commit Messages
 
@@ -75,7 +74,7 @@ make lint
 make test
 
 # Auto-format code
-black neon-city/src/ neon-city/tests/
+black src/ tests/
 ```
 
 ### Pull Request Process

@@ -2,12 +2,39 @@
 version: "3.9"
 
 services:
-  # Neon City Simulation API
-  neon-city-api:
+  # Factory Orchestrator API
+  factory-api:
     build:
-      context: ./neon-city
+      context: .
       dockerfile: Dockerfile
-    container_name: neon-city-api
+    container_name: factory-api
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://neon:neon@db:5432/neoncity
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=info
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - net
+
+  # Simulation API
+  simulation-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: simulation-api
     ports:
       - "8000:8000"
     environment:
@@ -23,8 +50,6 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    volumes:
-      - neon-data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
@@ -32,30 +57,6 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
-    networks:
-      - net
-
-  # Factory Orchestrator API
-  factory-api:
-    build:
-      context: ./factory-api
-      dockerfile: Dockerfile
-    container_name: factory-api
-    ports:
-      - "8080:8080"
-    environment:
-      - NEON_CITY_URL=http://neon-city-api:8000
-      - REDIS_URL=redis://redis:6379
-      - LOG_LEVEL=info
-    depends_on:
-      - neon-city-api
-      - redis
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
     networks:
       - net
 
@@ -102,7 +103,6 @@ services:
 volumes:
   pgdata:
   redisdata:
-  neon-data:
 
 networks:
   net:
