@@ -1,29 +1,54 @@
+# Python
 __pycache__/
 *.py[cod]
-.venv/
-venv/
-ENV/
-.env
+*$py.class
+*.so
 *.egg-info/
 dist/
 build/
+*.egg
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
 .pytest_cache/
 .mypy_cache/
 .coverage
 htmlcov/
+.tox/
+nosetests.xml
+coverage.xml
+
+# Logs
 *.log
+logs/
+
+# Data
+data/
 checkpoint_*.json
 ckpt_*.json
 report_*.json
 seed_snapshot.json
-data/postgres/
-data/redis/
-data/
-backups/
-artifacts/
-logs/
-workspace/
-workspaces/
-neon-city/checkpoint_50k.json
-neon-city/ckpt_massive.json
-neon-city/report_*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+docker-volumes/

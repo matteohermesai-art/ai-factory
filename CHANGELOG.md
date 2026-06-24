@@ -5,28 +5,35 @@ All notable changes to AI Factory will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.0] - 2025-06-24
 
 ### Added
-- v2.0: Multi-agent AI factory with Neon City simulation
-- 200+ autonomous agents (citizens, hackers, police, corporations)
-- Full economy with markets, black markets, and multi-currency
-- Skill tree evolution system (4 tiers per agent type)
-- Faction reputation tracking
+- Multi-agent factory with 200+ agents on 80x80 grid
+- Full economy: credits, data, black market, corporation shares
+- Skill tree evolution (4 tiers per agent type)
+- Faction reputation tracking system
 - Legal system: arrests, bounties, probation, criminal records
-- Environmental events: blackouts, ransomware, riots, network glitches
-- Mission system with dynamic quest generation
-- Agent workers: SCITHERON (Python), PAVARD (Swift), Hermes (AI assistant)
+- Environmental events: blackouts, ransomware, riots, network glitches, pandemonium
+- Mission system with dynamic quest generation and rewards
+- Propaganda mechanics for corporations and influencers
+- Agent workers: SCITHERON (Python), PAVARD (Swift), Hermes (AI orchestrator)
 - Hermes skill system with procedural memory
-- REST API with FastAPI
-- Docker & Docker Compose infrastructure
-- Alembic database migrations (PostgreSQL + asyncpg)
+- REST API with FastAPI (OpenAPI docs at /docs)
+- Docker and Docker Compose infrastructure
+- PostgreSQL with Alembic migrations
+- Redis caching layer
 - Structured logging with structlog
 - Replay system for simulation playback
 - Cron job scheduling for background tasks
+- Checkpoint system for long simulations (100k+ ticks)
+- Garbage collection for memory optimization
+- Full E2E test suite with >80% coverage
+- Professional documentation: README, CHANGELOG, CONTRIBUTING, LICENSE
+- Agent configuration files with runtime configs
+- Hermes skill definitions (9 skills)
 
 ### Performance
-- 126 tick/sec with 200 agents on 80x80 grid
+- 126 tick/sec with 200 agents
 - Checkpoint save/resume for 100k+ tick simulations
 - Memory optimization via periodic GC and market order cleanup
 
@@ -35,8 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release
 - Single-agent worker system
-- Basic neon_city simulation (100x100 grid, 4 agent types)
+- Basic neon-city simulation (100x100 grid, 4 agent types)
 - Economy with credits and data currencies
-- Event system
+- Event system with cyber attacks and police raids
 - REST API
 - Test suite with pytest

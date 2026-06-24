@@ -1,103 +1,130 @@
 # Contributing to AI Factory
 
-Thank you for your interest in contributing! This document outlines the guidelines for contributing to the AI Factory project.
+Welcome! Thank you for your interest in contributing to AI Factory.
 
 ## Code of Conduct
 
-- Be respectful and inclusive
-- Welcome newcomers
-- Focus on constructive feedback
+- Be respectful and inclusive in all interactions
+- Welcome newcomers and help them get started
+- Provide constructive and specific feedback
+- Focus on what is best for the community and the project
 
 ## How to Contribute
 
-### 1. Fork and Clone
+### Quick Start
 
 ```bash
-git clone https://github.com/matteohermesai-art/ai-factory.git
+# 1. Fork and clone
+git clone https://github.com/YOUR_USERNAME/ai-factory.git
 cd ai-factory
-```
 
-### 2. Create a Branch
-
-```bash
-git checkout -b feature/your-feature-name
-```
-
-Branch naming conventions:
-- `feature/` — New features
-- `bugfix/` — Bug fixes
-- `docs/` — Documentation
-- `refactor/` — Code refactoring
-- `test/` — Test additions
-
-### 3. Development Setup
-
-```bash
+# 2. Set up development environment
 python -m venv venv
 source venv/bin/activate
 pip install -r neon-city/requirements.txt
 pip install -e ".[dev]"
-```
 
-### 4. Code Standards
+# 3. Create feature branch
+git checkout -b feature/your-feature-name
 
-- **Formatting**: Black (line-length 100)
-- **Linting**: ruff
-- **Type Hints**: mypy strict
-- **Tests**: pytest with >80% coverage
-
-```bash
-# Format code
-make lint
-
-# Run tests
+# 4. Make changes, test, and submit PR
 make test
+make lint
+git push origin feature/your-feature-name
+# Then open a Pull Request on GitHub
 ```
 
-### 5. Commit Messages
+### Branch Naming
+
+| Prefix | Use For |
+|--------|---------|
+| `feature/` | New features |
+| `fix/` | Bug fixes |
+| `docs/` | Documentation only |
+| `refactor/` | Code refactoring |
+| `test/` | Test additions/improvements |
+| `infra/` | Infrastructure/CI changes |
+| `changelog/` | Changelog updates |
+
+### Commit Messages
 
 Follow conventional commits:
 
 ```
-feat: add new agent type
-fix: resolve market matching bug
-docs: update API documentation
-refactor: optimize tick engine
-test: add economy integration tests
+feat(agents): add black market trading for citizens
+fix(engine): resolve memory leak in tick loop
+docs(readme): update API examples
+refactor(economy): extract order matching into separate module
+test(events): add integration tests for riot events
 ```
 
-### 6. Pull Request
+### Code Standards
 
-1. Ensure all tests pass
-2. Update CHANGELOG.md
-3. Update documentation if needed
-4. Request review
+We enforce consistent code style:
 
-## Project Structure
+| Tool | Purpose | Config |
+|------|---------|--------|
+| `black` | Code formatting | `pyproject.toml` |
+| `ruff` | Linting | `pyproject.toml` |
+| `mypy` | Type checking | `pyproject.toml` |
+| `pytest` | Testing | `pyproject.toml` |
 
+```bash
+# Run all checks
+make lint
+make test
+
+# Auto-format code
+black neon-city/src/ neon-city/tests/
 ```
-ai-factory/
-├── neon-city/       # Simulation engine (main code)
-├── agents/          # Agent configurations
-├── factory-api/     # REST API
-├── skills/          # Hermes skill definitions
-├── infra/           # Docker, CI/CD
-└── workspace/       # Agent workspaces
-```
+
+### Pull Request Process
+
+1. **Test**: Ensure `make test` passes
+2. **Lint**: Ensure `make lint` passes
+3. **Document**: Update relevant documentation
+4. **Changelog**: Add entry to `CHANGELOG.md`
+5. **PR Description**: Describe what and why, reference issues
+6. **Review**: Request review from maintainers
+7. **CI**: Ensure all CI checks pass
 
 ## Areas for Contribution
 
-- **Simulation**: New agent behaviors, events, economies
-- **Performance**: Optimization, caching, async improvements
-- **API**: New endpoints, middleware, schemas
-- **Tests**: Coverage, integration tests, benchmarks
-- **Docs**: README improvements, tutorials, examples
-- **Infrastructure**: CI/CD, monitoring, deployment
+### Simulation
+- New agent types and behaviors
+- Environmental events
+- Economic mechanics
+- Skill tree expansions
+
+### Performance
+- Async optimization
+- Caching strategies
+- Memory efficiency
+- Tick engine improvements
+
+### API
+- New endpoints
+- Middleware
+- WebSocket real-time events
+- Rate limiting
+
+### Infrastructure
+- CI/CD pipelines
+- Monitoring and alerting
+- Deployment scripts
+- Docker improvements
+
+### Documentation
+- README improvements
+- Tutorials and examples
+- API documentation
+- Architecture diagrams
 
 ## Questions?
 
-Open an issue with the `question` label or contact matteohermesai@gmail.com.
+- Open an issue with the `question` label
+- Contact: matteohermesai@gmail.com
 
 ---
 
-Thank you for contributing to AI Factory!
+Your contributions are valued. Thank you for helping build AI Factory!

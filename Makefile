@@ -1,60 +1,78 @@
-# Makefile — AI Factory
-.PHONY: up down test lint clean init-db seed logs
+# Makefile - AI Factory
 
-# ═══ Docker ═══
-up:
+.PHONY: help up down restart test lint format init-db seed logs status clean simulate simulate-ultra shell
+
+# Default target
+help: ## Show this help
+	@echo "AI Factory - Available Commands"
+	@echo "================================"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+# Docker
+up: ## Start all services
 	docker-compose up -d --build
-	@echo "✅ AI Factory started"
-	@echo "  Neon City API: http://localhost:8000/docs"
-	@echo "  Factory API:   http://localhost:8080/docs"
-	@echo "  Dashboard:     http://localhost:3000"
+	@echo "Services started:"
+	@echo "  Neon City API  -> http://localhost:8000/docs"
+	@echo "  Factory API    -> http://localhost:8080/docs"
+	@echo "  Dashboard      -> http://localhost:3000"
 
-down:
+down: ## Stop all services
 	docker-compose down
-	@echo "🛑 AI Factory stopped"
 
-restart: down up
+restart: down up ## Restart all services
 
-# ═══ Database ═══
-init-db:
+logs: ## View logs from all services
+	docker-compose logs -f --tail=100
+
+status: ## Show service status
+	docker-compose ps
+
+# Database
+init-db: ## Initialize database and run migrations
 	docker-compose exec neon-city-api alembic upgrade head
-	@echo "✅ Database initialized"
+	@echo "Database initialized"
 
-seed:
+seed: ## Seed database with initial data
 	docker-compose exec neon-city-api python scripts/seed.py
-	@echo "✅ Database seeded"
+	@echo "Database seeded"
 
-# ═══ Development ═══
-test:
+shell: ## Open shell in API container
+	docker-compose exec neon-city-api bash
+
+# Development
+test: ## Run test suite
 	cd neon-city && pytest tests/ -v --tb=short
 
-test-cov:
-	cd neon-city && pytest tests/ --cov=src --cov-report=html
+test-cov: ## Run tests with coverage
+	cd neon-city && pytest tests/ --cov=src --cov-report=html --cov-report=term
 
-lint:
+lint: ## Lint and check formatting
 	cd neon-city && ruff check src/ tests/
 	cd neon-city && black --check src/ tests/
+	cd neon-city && mypy src/
 
-format:
+format: ## Auto-format code
 	cd neon-city && black src/ tests/
 	cd neon-city && ruff check --fix src/ tests/
 
-# ═══ Simulation ═══
-simulate:
-	cd neon-city && python -c "import asyncio; from src.main import run_simulation; asyncio.run(run_simulation())"
+# Simulation
+simulate: ## Run simulation (local)
+	cd neon-city && python -m src.main
 
-simulate-ultra:
-	cd neon-city && python scripts/run_simulation.py --ticks 100000 --agents 200
+simulate-ultra: ## Run 100k tick simulation (background)
+	cd neon-city && nohup python scripts/run_simulation.py --ticks 100000 --agents 200 > /home/orin/ai-factory/logs/sim_$(date +%Y%m%d_%H%M%S).log 2>&1 &
+	@echo "Simulation started in background. PID: $$!"
 
-# ═══ Utilities ═══
-logs:
-	docker-compose logs -f
-
-clean:
+# Cleanup
+clean: ## Remove build artifacts
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	rm -rf .pytest_cache .mypy_cache htmlcov
-	@echo "🧹 Cleaned"
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".mypy_cache" -exec rm -rf {} + 2>/dev/null || true
+	rm -rf htmlcov .coverage 2>/dev/null || true
+	@echo "Cleaned!"
 
-status:
-	docker-compose ps
+clean-all: ## Remove everything (including volumes)
+	docker-compose down -v --rmi all 2>/dev/null || true
+	make clean

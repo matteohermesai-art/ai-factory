@@ -1,10 +1,8 @@
-# docker-compose.yml — AI Factory Full Stack
+# docker-compose.yml - AI Factory Infrastructure
 version: "3.9"
 
 services:
-  # ═══════════════════════════════════════════
-  # 🏙️ Neon City Simulation API
-  # ═══════════════════════════════════════════
+  # Neon City Simulation API
   neon-city-api:
     build:
       context: ./neon-city
@@ -14,6 +12,7 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://neon:neon@db:5432/neoncity
+      - REDIS_URL=redis://redis:6379
       - GRID_WIDTH=80
       - GRID_HEIGHT=80
       - TICK_INTERVAL_SECONDS=1.0
@@ -25,19 +24,18 @@ services:
       redis:
         condition: service_healthy
     volumes:
-      - neon-city-data:/app/data
+      - neon-data:/app/data
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 15s
     networks:
-      - ai-factory-net
+      - net
 
-  # ═══════════════════════════════════════════
-  # 🌐 Factory API (Orchestrator)
-  # ═══════════════════════════════════════════
+  # Factory Orchestrator API
   factory-api:
     build:
       context: ./factory-api
@@ -59,14 +57,12 @@ services:
       timeout: 10s
       retries: 3
     networks:
-      - ai-factory-net
+      - net
 
-  # ═══════════════════════════════════════════
-  # 🗄️ PostgreSQL Database
-  # ═══════════════════════════════════════════
+  # PostgreSQL Database
   db:
     image: postgres:16-alpine
-    container_name: neon-city-db
+    container_name: ai-factory-db
     environment:
       POSTGRES_USER: neon
       POSTGRES_PASSWORD: neon
@@ -74,26 +70,26 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U neon"]
+      test: ["CMD-SHELL", "pg_isready -U neon -d neoncity"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
     restart: unless-stopped
     networks:
-      - ai-factory-net
+      - net
 
-  # ═══════════════════════════════════════════
-  # 🔴 Redis Cache
-  # ═══════════════════════════════════════════
+  # Redis Cache
   redis:
     image: redis:7-alpine
-    container_name: neon-city-redis
+    container_name: ai-factory-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - redisdata:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -101,31 +97,13 @@ services:
       retries: 5
     restart: unless-stopped
     networks:
-      - ai-factory-net
-
-  # ═══════════════════════════════════════════
-  # 📊 Analytics Dashboard (optional)
-  # ═══════════════════════════════════════════
-  dashboard:
-    build:
-      context: ./infra/dashboard
-      dockerfile: Dockerfile
-    container_name: factory-dashboard
-    ports:
-      - "3000:3000"
-    environment:
-      - API_URL=http://factory-api:8080
-    depends_on:
-      - factory-api
-    restart: unless-stopped
-    networks:
-      - ai-factory-net
+      - net
 
 volumes:
-  postgres-data:
-  redis-data:
-  neon-city-data:
+  pgdata:
+  redisdata:
+  neon-data:
 
 networks:
-  ai-factory-net:
+  net:
     driver: bridge
