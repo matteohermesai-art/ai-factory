@@ -20,18 +20,18 @@ AI Factory uses a multi-agent architecture where specialized workers collaborate
 
 | Field | Value |
 |-------|-------|
-| **Role** | Simulation Engineer & Python Expert |
+| **Role** | Backend Developer & Python Expert |
 | **Model** | claude-sonnet-4-20250514 |
 | **Tools** | terminal, file, browser, web_search, delegate_task |
 | **Max Tasks** | 3 concurrent |
 | **Skills** | python-debug, software-development, github, test-driven-development |
 
 **Responsibilities:**
-- Design and implement Neon City simulation engine
-- Build REST APIs with FastAPI
-- Write comprehensive test suites
-- Optimize async patterns and memory management
-- Database design with SQLAlchemy + Alembic
+- Build backend services and REST APIs
+- Write comprehensive test suites with pytest
+- Code review and refactoring
+- Async Python optimization
+- Database design with SQLAlchemy
 
 **Workspace:** `workspace/scitheron/`
 
@@ -48,10 +48,10 @@ AI Factory uses a multi-agent architecture where specialized workers collaborate
 | **Skills** | software-development, github |
 
 **Responsibilities:**
-- Build native macOS/iOS admin tools for Neon City
-- Create Swift-based monitoring dashboards
-- Write Vapor-based API alternatives
+- Build native macOS/iOS applications with SwiftUI
+- Write server-side Swift with Vapor
 - Performance profiling and optimization
+- Cross-platform CLI tools
 
 **Workspace:** `workspace/pavard/`
 
@@ -68,11 +68,11 @@ AI Factory uses a multi-agent architecture where specialized workers collaborate
 | **Skills** | hermes-agent, github, software-development, research, terminal |
 
 **Responsibilities:**
-- Coordinate SCITHERON and PAVARD workers
+- Coordinate SCITHERON and PAVARD workers via delegation
 - Manage GitHub repository (issues, PRs, CI/CD)
-- Run simulations and analyze results
 - Schedule cron jobs for background tasks
 - Computer use for desktop automation
+- Research and information gathering
 - Memory persistence across sessions
 
 **Workspace:** `workspace/hermes/`
@@ -82,17 +82,18 @@ AI Factory uses a multi-agent architecture where specialized workers collaborate
 ## Communication Protocol
 
 1. **Task Assignment**: Hermes delegates via `delegate_task`
-2. **State Sharing**: Agents persist state in `workspace/<agent>/memory/`
-3. **Results**: Agent reports output in `workspace/<agent>/output/`
-4. **Memory**: Hermes stores persistent facts in `~/.hermes/memory/`
+2. **State Sharing**: Workers persist state in `workspace/<agent>/memory/`
+3. **Results**: Worker reports output in `workspace/<agent>/output/`
+4. **Memory**: Hermes stores persistent facts in memory store
 
-## Adding New Agents
+## Adding New Workers
 
 1. Create `agents/<NAME>.md` with identity and config
 2. Create `workspace/<NAME>/` for workspace
-3. Add agent config to `factory-api/agents.py`
-4. Update this README with the new agent
-5. Add agent-specific skills to `skills/`
+3. Add worker class in `src/worker/`
+4. Register routes in `src/api/routes/`
+5. Update this README with the new worker
+6. Add worker-specific skills to `skills/`
 
 ---
 

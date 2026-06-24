@@ -1,6 +1,6 @@
 # Makefile - AI Factory
 
-.PHONY: help up down restart test lint format init-db seed logs status clean simulate simulate-ultra shell
+.PHONY: help up down restart test lint format init-db logs status clean shell
 
 # Default target
 help: ## Show this help
@@ -12,9 +12,7 @@ help: ## Show this help
 # Docker
 up: ## Start all services
 	docker-compose up -d --build
-	@echo "Services started:"
-	@echo "  API      -> http://localhost:8000/docs"
-	@echo "  Factory  -> http://localhost:8080/docs"
+	@echo "Services started -> http://localhost:8000/docs"
 
 down: ## Stop all services
 	docker-compose down
@@ -31,10 +29,6 @@ status: ## Show service status
 init-db: ## Initialize database and run migrations
 	docker-compose exec api alembic upgrade head
 	@echo "Database initialized"
-
-seed: ## Seed database with initial data
-	docker-compose exec api python scripts/seed.py
-	@echo "Database seeded"
 
 shell: ## Open shell in API container
 	docker-compose exec api bash
@@ -55,14 +49,6 @@ format: ## Auto-format code
 	black src/ tests/
 	ruff check --fix src/ tests/
 
-# Simulation
-simulate: ## Run simulation (local)
-	python -m src.main
-
-simulate-ultra: ## Run 100k tick simulation (background)
-	nohup python scripts/run_simulation.py --ticks 100000 --agents 200 > logs/sim_$$(date +%Y%m%d_%H%M%S).log 2>&1 &
-	@echo "Simulation started in background. PID: $$!"
-
 # Cleanup
 clean: ## Remove build artifacts
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
@@ -72,6 +58,6 @@ clean: ## Remove build artifacts
 	rm -rf htmlcov .coverage 2>/dev/null || true
 	@echo "Cleaned!"
 
-clean-all: ## Remove everything (including volumes)
+clean-all: ## Remove everything including volumes
 	docker-compose down -v --rmi all 2>/dev/null || true
 	make clean

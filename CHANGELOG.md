@@ -8,44 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2025-06-24
 
 ### Added
-- Multi-agent factory with 200+ agents on 80x80 grid
-- Full economy: credits, data, black market, corporation shares
-- Skill tree evolution (4 tiers per agent type)
-- Faction reputation tracking system
-- Legal system: arrests, bounties, probation, criminal records
-- Environmental events: blackouts, ransomware, riots, network glitches, pandemonium
-- Mission system with dynamic quest generation and rewards
-- Propaganda mechanics for corporations and influencers
-- Agent workers: SCITHERON (Python), PAVARD (Swift), Hermes (AI orchestrator)
-- Hermes skill system with procedural memory
-- REST API with FastAPI (OpenAPI docs at /docs)
-- Docker and Docker Compose infrastructure
-- PostgreSQL with Alembic migrations
-- Redis caching layer
+- Multi-agent orchestration framework with 3 specialized workers
+- Worker delegation system with `delegate_task`
+- Cron job scheduling for recurring tasks
+- REST API with FastAPI for task management and monitoring
+- Hermes skill system with 7 markdown-based skills
+- Docker infrastructure with API, PostgreSQL, and Redis
 - Structured logging with structlog
-- Replay system for simulation playback
-- Cron job scheduling for background tasks
-- Checkpoint system for long simulations (100k+ ticks)
-- Garbage collection for memory optimization
-- Full E2E test suite with >80% coverage
+- Worker persistence layer (workspace, memory, state)
+- Full E2E test suite
 - Professional documentation: README, CHANGELOG, CONTRIBUTING, LICENSE
-- Agent configuration files with runtime configs
-- Hermes skill definitions (9 skills)
+- Worker configuration files (SCITHERON, PAVARD, HERMES)
 - Multi-stage Dockerfile with healthcheck
-- docker-compose with 5 services
+- pyproject.toml with complete tool configuration
 
-### Performance
-- 126 tick/sec with 200 agents
-- Checkpoint save/resume for 100k+ tick simulations
-- Memory optimization via periodic GC and market order cleanup
+### Architecture
+- AsyncIO-based task queue
+- Worker isolation with separate workspaces
+- Skill loading on-demand via SKILL.md format
+- RESTful API for all operations
 
 ## [1.0.0] - 2025-01-15
 
 ### Added
 - Initial release
-- Single-agent worker system
-- Basic simulation engine (100x100 grid, 4 agent types)
-- Economy with credits and data currencies
-- Event system
-- REST API
-- Test suite with pytest
+- Single-worker (Hermes) with basic tool access
+- File operations and terminal commands
+- Basic memory persistence

@@ -2,49 +2,20 @@
 version: "3.9"
 
 services:
-  # Factory Orchestrator API
-  factory-api:
+  # AI Factory API
+  api:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: factory-api
-    ports:
-      - "8080:8080"
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://neon:neon@db:5432/neoncity
-      - REDIS_URL=redis://redis:6379
-      - LOG_LEVEL=info
-    depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
-    networks:
-      - net
-
-  # Simulation API
-  simulation-api:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: simulation-api
+    container_name: ai-factory-api
     ports:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql+asyncpg://neon:neon@db:5432/neoncity
       - REDIS_URL=redis://redis:6379
-      - GRID_WIDTH=80
-      - GRID_HEIGHT=80
-      - TICK_INTERVAL_SECONDS=1.0
       - LOG_LEVEL=info
-      - SEED=42
+      - MAX_WORKERS=5
+      - ENABLE_CRON=true
     depends_on:
       db:
         condition: service_healthy
@@ -73,7 +44,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U neon -d neoncity"]
+      test: ["CMD-SHELL", "pg_is_ready -U neon -d neoncity"]
       interval: 10s
       timeout: 5s
       retries: 5

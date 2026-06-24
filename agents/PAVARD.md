@@ -9,9 +9,8 @@
 
 ## Capabilities
 
-- Build native macOS/iOS admin tools for Neon City
-- Create Swift-based monitoring dashboards
-- Write Vapor-based API alternatives
+- Build native macOS/iOS applications with SwiftUI
+- Write server-side Swift with Vapor framework
 - Performance profiling and optimization
 - Cross-platform CLI tools
 - System-level automation
@@ -42,15 +41,15 @@ workspace/pavard/
 │   ├── project_state.md
 │   └── decisions.md
 ├── projects/        # Xcode projects
-│   └── NeonCityMonitor/
+│   └── (workspace files)
 └── output/
 ```
 
 ## Interaction Guidelines
 
 1. **Task Assignment**: Hermes delegates via `delegate_task`
-2. **Code Standards**: Follow Swift style guidelines
-3. **Testing**: All features must have unit tests
+2. **Code Standards**: Follow Swift API Design Guidelines
+3. **Testing**: All features must have unit tests (XCTest)
 4. **Documentation**: Swift Doc comments required
 
 ## Example Tasks
@@ -58,9 +57,9 @@ workspace/pavard/
 ```swift
 // Delegate to PAVARD:
 {
-  "goal": "Build a macOS menu bar app for Neon City monitoring",
-  "context": "Should show real-time simulation stats from the API",
-  "toolsets": ["terminal", "file"]
+  "goal": "Build a macOS menu bar app for factory monitoring",
+  "context": "Should show worker status from the API",
+  "tool": ["terminal", "file"]
 }
 ```
 

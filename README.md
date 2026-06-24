@@ -1,51 +1,58 @@
 # AI Factory
 
-A multi-agent simulation framework for building, deploying, and orchestrating autonomous AI workers.
+A framework for building, deploying, and orchestrating autonomous AI agent workers.
 
 ## Highlights
 
-Orchestrate autonomous agents with full simulation engine, skill trees, events, REST API, and Docker infrastructure — all containerized and production-ready.
+- **Multi-agent orchestration** — coordinate specialized AI workers under a central orchestrator
+- **Skill system** — procedural memory via markdown-based SKILL.md definitions
+- **Worker delegation** — spawn sub-agents for parallel task execution
+- **Cron scheduling** — background jobs with recurring schedules
+- **REST API** — full control and monitoring via FastAPI
+- **Docker infrastructure** — production-ready containerized deployment
+- **Structured logging** — JSON logs with analytics pipeline
 
 ## Architecture
 
 ```
                        REST API (FastAPI)
                             |
-            +---------------+---------------+
-            |                               |
-    Simulation API                   Factory API
-    (Workers)                        (Orchestrator)
-            |                               |
-    +-------+-------+               +-------+-------+
-    |       |       |               |       |       |
-  Grid   Events  Economy        Workers  Tasks  Cron
-  World   Bus     Market          |              |
-    |       |       |          SCITHERON      Scheduler
-  Agents  Logging  Data         PAVARD
-  (200+)  structlog              HERMES
+                  +---------+---------+
+                  |                   |
+          Task Router          Cron Scheduler
+                  |                   |
+          +-------+-------+   +------+------+
+          |       |       |   |             |
+       HERMES  SCITHERON  PAVARD   Background Jobs
+       (Orch)  (Python)  (Swift)   (Scheduled)
+          |       |       |
+          +-------+-------+
+                  |
+          Workspaces (persistent state)
+                  |
+          +-------+-------+
+          |       |       |
+        Files   Memory   Skills
 ```
 
-### Agent Types
+### Workers
 
-| Agent | Role | Skill Tree |
-|-------|------|------------|
-| Citizen | Works, trades, influencers | Worker -> Freelancer -> Entrepreneur -> Influencer |
-| Hacker | Hacks, black market | Script Kiddie -> Net Runner -> Elite -> Ghost |
-| Police | Patrols, arrests | Patrol -> Detective -> SWAT -> Commissioner |
-| Corporation | Market manipulation | Startup -> MegaCorp -> Syndicate -> AI Overseer |
+| Worker | Role | Specialty |
+|--------|------|-----------|
+| **HERMES** | Orchestrator & AI Assistant | Coordination, delegation, scheduling, research |
+| **SCITHERON** | Python Developer | Backend, async Python, FastAPI, testing, code review |
+| **PAVARD** | Swift Developer | iOS/macOS apps, SwiftUI, Vapor, system programming |
 
 ### Core Modules
 
 | Module | Description |
 |--------|-------------|
-| `engine/` | Simulation core: grid world, tick engine, replay |
-| `agents/` | Agent implementations with behaviors |
-| `economy/` | Market, currency, transactions, black market |
-| `events/` | Event bus, generators, environmental events |
-| `api/` | FastAPI REST endpoints |
-| `persistence/` | SQLAlchemy models, repositories |
+| `api/` | FastAPI REST endpoints for task management and monitoring |
+| `worker/` | Background scheduler and task queue |
+| `skills/` | Hermes skill definitions (procedural memory) |
+| `agents/` | Worker configuration files and runtime specs |
+| `persistence/` | State storage for workspaces and agent memory |
 | `logging/` | Structured logging with structlog |
-| `worker/` | Background scheduler |
 
 ## Quick Start
 
@@ -58,6 +65,7 @@ cd ai-factory
 make up
 
 # Or local
+python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python -m src.main
@@ -69,14 +77,12 @@ python -m src.main
 |---------|-------------|
 | `make up` | Start all Docker services |
 | `make down` | Stop all services |
-| `make init-db` | Initialize database and run migrations |
 | `make test` | Run full test suite |
 | `make lint` | Lint and format code |
-| `make simulate` | Run simulation locally |
-| `make simulate-ultra` | Run 100k tick simulation |
 | `make logs` | View Docker logs |
 | `make status` | Check service health |
 | `make clean` | Remove build artifacts |
+| `make shell` | Open shell in container |
 
 ## Configuration
 
@@ -86,22 +92,31 @@ All configuration via environment variables. Copy `.env.example` to `.env`:
 cp .env.example .env
 ```
 
-See `.env.example` for all available options.
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATABASE_URL` | `sqlite+aiosqlite:///ai-factory.db` | Database connection |
+| `REDIS_URL` | `redis://redis:6379` | Redis cache URL |
+| `LOG_LEVEL` | `info` | Logging level |
+| `API_PORT` | `8000` | API server port |
+| `ENABLE_CRON` | `true` | Enable cron scheduler |
+| `MAX_WORKERS` | `5` | Max concurrent workers |
 
 ## API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/api/simulation/start` | Start simulation |
-| `POST` | `/api/simulation/stop` | Stop simulation |
-| `GET` | `/api/simulation/status` | Current state |
-| `GET` | `/api/agents/` | List all agents |
-| `GET` | `/api/agents/{id}` | Agent details |
-| `GET` | `/api/economy/market` | Market state |
-| `GET` | `/api/economy/stats` | Economy statistics |
-| `GET` | `/api/events/` | Recent events |
-| `POST` | `/api/replay/start` | Start replay recording |
-| `GET` | `/api/replay/{id}` | Get replay data |
+| `GET` | `/health` | Health check |
+| `GET` | `/api/workers/` | List all workers |
+| `POST` | `/api/workers/delegate` | Delegate task to a worker |
+| `GET` | `/api/workers/{id}/status` | Worker status |
+| `GET` | `/api/tasks/` | List all tasks |
+| `POST` | `/api/tasks/` | Create new task |
+| `GET` | `/api/tasks/{id}` | Task details |
+| `GET` | `/api/cron/` | List cron jobs |
+| `POST` | `/api/cron/` | Create cron job |
+| `DELETE` | `/api/cron/{id}` | Delete cron job |
+| `GET` | `/api/skills/` | List available skills |
+| `GET` | `/api/workspace/{worker}` | List worker workspace files |
 
 Interactive API docs at `http://localhost:8000/docs`.
 
@@ -109,8 +124,7 @@ Interactive API docs at `http://localhost:8000/docs`.
 
 - **Python 3.11+** with AsyncIO
 - **FastAPI** REST framework
-- **SQLAlchemy 2.0** + asyncpg ORM
-- **PostgreSQL 16** database
+- **SQLAlchemy 2.0** + aiosqlite (dev) / asyncpg (prod)
 - **Redis** cache and message broker
 - **Alembic** database migrations
 - **structlog** structured logging
@@ -122,23 +136,33 @@ Interactive API docs at `http://localhost:8000/docs`.
 ```
 ai-factory/
 ├── src/                   # Source code
-│   ├── engine/            # Grid, world, tick, replay
-│   ├── agents/            # Citizen, hacker, police, corporation
-│   ├── economy/           # Market, currency, transactions
-│   ├── events/            # Event bus, generators
 │   ├── api/               # FastAPI app and routes
-│   ├── persistence/       # Database models
+│   │   ├── routes/
+│   │   ├── schemas.py
+│   │   └── app.py
+│   ├── worker/            # Task scheduler and queue
+│   │   └── scheduler.py
+│   ├── persistence/       # State storage
+│   │   ├── models.py
+│   │   ├── repository.py
+│   │   └── session.py
 │   ├── logging/           # Structured logging
-│   └── worker/            # Background scheduler
-├── agents/                # Agent configuration files
-│   ├── SCITHERON.md       # Python developer
-│   ├── PAVARD.md          # Swift developer
-│   ├── HERMES.md          # AI orchestrator
-│   └── AGENT_CONFIGS.md   # All agent docs
-├── skills/                # Hermes skills
-├── infra/                 # Infrastructure docs
+│   │   ├── structured.py
+│   │   └── analytics.py
+│   ├── config.py          # Configuration management
+│   └── main.py            # Application entry point
+├── agents/                # Worker configurations
+│   ├── SCITHERON.md       # Python developer worker
+│   ├── PAVARD.md          # Swift developer worker
+│   ├── HERMES.md          # AI orchestrator worker
+│   └── AGENT_CONFIGS.md   # All worker docs
+├── skills/                # Hermes skill definitions
+│   ├── HERMES_SETUP.md    # Post-install setup prompt
+│   └── SKILL_DEFINITIONS.md
 ├── tests/                 # Test suite (pytest)
 ├── scripts/               # Utility scripts
+├── infra/                 # Infrastructure docs
+│   └── DOCKER.md
 ├── docker-compose.yml     # Full stack
 ├── Dockerfile             # Multi-stage build
 ├── Makefile               # Build targets
@@ -149,6 +173,34 @@ ai-factory/
 ├── CONTRIBUTING.md        # Contribution guidelines
 └── LICENSE                # MIT License
 ```
+
+## Workers
+
+### HERMES — Orchestrator
+
+Coordinates other workers, manages schedules, and handles task delegation. Has full tool access including `delegate_task`, `cronjob`, and `computer_use`.
+
+### SCITHERON — Python Developer
+
+Specializes in Python development: backend APIs, async code, testing, code reviews, and documentation. Uses `terminal`, `file`, `browser`, and `web_search` tools.
+
+### PAVARD — Swift Developer
+
+Specializes in Swift development: iOS/macOS apps, SwiftUI, Vapor server-side, and system programming. Uses `terminal`, `file`, and `browser` tools.
+
+## Skills
+
+Skills are markdown-based procedural memory. Each skill is a `SKILL.md` file that Hermes loads on-demand.
+
+| Skill | Purpose |
+|-------|---------|
+| `hermes-agent` | Self-management and configuration |
+| `github` | GitHub operations (issues, PRs, repos) |
+| `software-development` | Code quality, testing, review |
+| `research` | Web search and analysis |
+| `python-debug` | Python debugging with pdb |
+| `systematic-debugging` | 4-phase root cause analysis |
+| `test-driven-development` | TDD workflow |
 
 ## Contributing
 

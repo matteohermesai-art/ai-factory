@@ -1,11 +1,11 @@
 # AI Factory - Startup Guide
 
-Welcome to AI Factory. This guide gets you up and running.
+Welcome to AI Factory. This guide gets you up and running with the multi-agent worker framework.
 
 ## Prerequisites
 
 - Python 3.11+
-- Docker and Docker Compose v2
+- Docker & Docker Compose v2
 - 4GB+ RAM available
 
 ## First Run
@@ -27,7 +27,6 @@ make init-db
 
 # 5. Verify
 curl http://localhost:8000/health
-curl http://localhost:8080/health
 ```
 
 ## Project Layout
@@ -35,39 +34,53 @@ curl http://localhost:8080/health
 ```
 ai-factory/
 ├── src/                   # Source code
-│   ├── engine/            # Grid, world, tick, replay
-│   ├── agents/            # Citizen, hacker, police, corporation
-│   ├── economy/           # Market, currency, transactions
-│   ├── events/            # Event bus, generators
-│   ├── api/               # FastAPI app and routes
-│   ├── persistence/       # Database models
+│   ├── api/               # FastAPI REST API
+│   │   ├── routes/        # API endpoints
+│   │   ├── schemas.py     # Pydantic models
+│   │   └── app.py         # FastAPI app
+│   ├── worker/            # Task scheduler
+│   │   └── scheduler.py    # Cron & delegation
+│   ├── persistence/       # State storage
+│   │   ├── models.py      # Database models
+│   │   ├── repository.py  # Data access
+│   │   └── session.py     # DB session
 │   ├── logging/           # Structured logging
-│   └── worker/            # Background scheduler
-├── agents/                # Agent configuration files
-│   ├── AGENT_CONFIGS.md   # All agent docs
-│   ├── SCITHERON.md       # Python expert
-│   └── PAVARD.md          # Swift expert
-├── factory-api/           # REST API orchestrator
+│   │   ├── structured.py
+│   │   └── analytics.py
+│   ├── config.py          # Configuration
+│   └── main.py            # Entry point
+│
+├── agents/                # Worker configurations
+│   ├── AGENT_CONFIGS.md   # All worker docs
+│   ├── SCITHERON.md       # Python developer
+│   ├── PAVARD.md          # Swift developer
+│   └── HERMES.md          # AI orchestrator
+│
 ├── skills/                # Hermes skills
-│   └── HERMES_SETUP.md    # Post-install prompt
-├── infra/                 # Infrastructure
+│   ├── HERMES_SETUP.md    # Post-install prompt
+│   └── SKILL_DEFINITIONS.md
+│
+├── tests/                 # Test suite
+├── scripts/               # Utility scripts
+├── infra/                 # Infrastructure docs
 │   └── DOCKER.md          # Docker guide
-├── workspace/             # Agent workspaces
-├── docker-compose.yml
-├── Dockerfile
-├── Makefile
-├── pyproject.toml
+│
+├── docker-compose.yml     # Full stack
+├── Dockerfile             # Multi-stage build
+├── Makefile               # Build targets
+├── pyproject.toml         # Project config
+├── .env.example           # Env template
 ├── README.md
 └── CHANGELOG.md
 ```
 
-## Agents
+## Workers
 
-| Agent | Role | Workspace |
-|-------|------|-----------|
-| **Hermes** | AI Assistant and Orchestrator | `workspace/hermes/` |
-| **SCITHERON** | Python Simulation Engineer | `workspace/scitheron/` |
-| **PAVARD** | Full-Stack Swift Developer | `workspace/pavard/` |
+| Worker | Role | Workspace |
+|--------|------|-----------|
+| **Hermes** | AI Assistant & Orchestrator | `workspace/hermes/` |
+| **SCITHERON** | Python Developer | `workspace/scitheron/` |
+| **PAVARD** | Swift Developer | `workspace/pavard/` |
 
 ## Hermes Skills
 
@@ -86,14 +99,8 @@ Or paste the prompt from `skills/HERMES_SETUP.md`.
 ## Common Commands
 
 ```bash
-# Run simulation
-make simulate
-
-# Run 100k tick simulation
-make simulate-ultra
-
-# View logs
-make logs
+# Run the API
+python -m src.main
 
 # Run tests
 make test
@@ -101,8 +108,16 @@ make test
 # Lint code
 make lint
 
-# Clean build artifacts
-make clean
+# Run lint and tests
+make lint && make test
+
+# Delegate a task to SCITHERON
+curl -X POST http://localhost:8000/api/workers/delegate \
+  -H "Content-Type: application/json" \
+  -d '{"worker":"scitheron","goal":"Implement auth endpoint","context":"FastAPI + JWT"}'
+
+# List workers
+curl http://localhost:8000/api/workers/
 ```
 
 ## Environment Variables
@@ -111,28 +126,29 @@ See `.env.example` for all options. Key ones:
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `DATABASE_URL` | `postgresql+asyncpg://neon:neon@db:5432/neoncity` | Database |
-| `GRID_WIDTH` | `80` | City grid width |
-| `GRID_HEIGHT` | `80` | City grid height |
-| `TOTAL_TICKS` | `10000` | Simulation length |
+| `DATABASE_URL` | `sqlite+aiosqlite:///ai-factory.db` | Database |
+| `REDIS_URL` | `redis://redis:6379` | Cache/broker |
+| `MAX_WORKERS` | `5` | Concurrent workers |
 | `LOG_LEVEL` | `info` | Logging level |
+| `ENABLE_CRON` | `true` | Enable scheduler |
 
 ## Troubleshooting
 
-**Port conflicts**: Change ports in `docker-compose.yml`
+**Port conflicts**: Change ports in `.env` or `docker-compose.yml`
 
 **Database errors**: `make init-db`
 
-**Memory issues**: Reduce `GRID_WIDTH`/`GRID_HEIGHT` in `.env`
+**Redis connection**: Ensure Redis container is healthy
 
-**Permission denied**: Ensure Docker user has access to `data/` directory
+**Worker timeout**: Increase timeout in config
 
 ## Next Steps
 
-1. Read `agents/AGENT_CONFIGS.md` for agent configuration
-2. Read `infra/DOCKER.md` for infrastructure guide
-3. Check `skills/HERMES_SETUP.md` for Hermes setup
+1. Read `agents/AGENT_CONFIGS.md` for worker configuration details
+2. Read `skills/SKILL_DEFINITIONS.md` for skill specifications
+3. Read `infra/DOCKER.md` for infrastructure guide
+4. Check `src/api/routes/` for available API endpoints
 
 ---
 
-Welcome to the future. The factory is online.
+The factory is online. Your workers are ready.

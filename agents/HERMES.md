@@ -9,13 +9,13 @@
 
 ## Capabilities
 
-- Coordinate SCITHERON and PAVARD workers
+- Coordinate SCITHERON and PAVARD workers via delegation
 - Manage GitHub repository (issues, PRs, CI/CD)
-- Run simulations and analyze results
-- Schedule cron jobs for background tasks
+- Schedule cron jobs for recurring tasks
 - Computer use for desktop automation
 - Web search and research
 - Memory persistence across sessions
+- File operations and terminal commands
 
 ## Runtime Configuration
 
@@ -26,13 +26,14 @@ provider: openrouter
 tools:
   - terminal
   - file
-  - browser
+  - patch
   - web_search
   - web_extract
   - computer_use
   - cronjob
   - delegate_task
   - session_search
+  - image_gen
 max_concurrent_tasks: 5
 memory_enabled: true
 skills:
@@ -41,6 +42,9 @@ skills:
   - software-development
   - research
   - terminal
+  - python-debug
+  - systematic-debugging
+  - test-driven-development
 ```
 
 ## Workspace
@@ -52,9 +56,7 @@ workspace/hermes/
 │   ├── environment.md   # Environment notes
 │   └── conventions.md   # Project conventions
 ├── projects/            # Project-specific data
-│   └── neon-city/
-│       ├── status.md
-│       └── roadmap.md
+│   └── (assigned projects)
 ├── output/              # Generated output
 │   ├── reports/
 │   └── analysis/
@@ -80,15 +82,16 @@ hermes skills create <skill_name>
 
 ### Available Skills
 
-| Skill | Purpose | Location |
-|-------|---------|----------|
-| `hermes-agent` | Self-management | `~/.hermes/skills/hermes-agent/` |
-| `github` | GitHub operations | `~/.hermes/skills/github/` |
-| `software-development` | Code quality | `~/.hermes/skills/software-development/` |
-| `research` | Web search & analysis | `~/.hermes/skills/research/` |
-| `terminal` | Shell commands | `~/.hermes/skills/terminal/` |
-| `systematic-debugging` | Root cause analysis | `~/.hermes/skills/systematic-debugging/` |
-| `test-driven-development` | TDD workflow | `~/.hermes/skills/test-driven-development/` |
+| Skill | Purpose |
+|-------|---------|
+| `hermes-agent` | Self-management and configuration |
+| `github` | GitHub operations |
+| `software-development` | Code quality, testing |
+| `research` | Web search and analysis |
+| `terminal` | Shell commands |
+| `python-debug` | Python debugging |
+| `systematic-debugging` | Root cause analysis |
+| `test-driven-development` | TDD workflow |
 
 ## Post-Installation Prompt
 
@@ -105,25 +108,24 @@ Initialize:
 5. Load research skill
 
 Working directory: /home/orin/ai-factory/
-Main project: /home/orin/ai-factory/neon-city/
-API: http://localhost:8000/docs
 
 Your role:
-- Build and extend Neon City simulation
-- Manage ai-factory GitHub repo
-- Run simulations and analyze results
-- Coordinate other agents
+- Coordinate Python (SCITHERON) and Swift (PAVARD) workers
+- Manage GitHub repository
+- Schedule background tasks
+- Run code quality checks
 - Create documentation
+- Delegate implementation tasks to specialized workers
 ```
 
 ## Cron Jobs
 
 ```bash
-# Hourly simulation
-hermes cronjob create --schedule "0 * * * *" --prompt "Run Neon City simulation for 10000 ticks"
+# Code review every hour
+hermes cronjob create --schedule "0 * * * *" --prompt "Run lint and tests on all PRs"
 
-# Daily cleanup
-hermes cronjob create --schedule "0 3 * * *" --prompt "Clean old checkpoints and reports"
+# Daily backup
+hermes cronjob create --schedule "0 3 * * *" --prompt "Backup workspace state to GitHub"
 ```
 
 ## Memory
@@ -135,7 +137,7 @@ Hermes persists memory across sessions:
 hermes memory add --target user --content "User prefers concise responses"
 
 # Search memory
-hermes memory search "neon city simulation"
+hermes memory search "project status"
 ```
 
 ---

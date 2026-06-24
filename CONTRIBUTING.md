@@ -50,11 +50,11 @@ git push origin feature/your-feature-name
 Follow conventional commits:
 
 ```
-feat(agents): add black market trading for citizens
-fix(engine): resolve memory leak in tick loop
-docs(readme): update API examples
-refactor(economy): extract order matching into separate module
-test(events): add integration tests for riot events
+feat(workers): add delegation timeout option
+fix(api): resolve task queue deadlock
+docs(readme): update worker configuration examples
+refactor(scheduler): extract cron logic into separate module
+test(workers): add integration tests for sub-agent delegation
 ```
 
 ### Code Standards
@@ -84,28 +84,27 @@ black src/ tests/
 3. **Document**: Update relevant documentation
 4. **Changelog**: Add entry to `CHANGELOG.md`
 5. **PR Description**: Describe what and why, reference issues
-6. **Review**: Request review from maintainers
-7. **CI**: Ensure all CI checks pass
+6. **Review**: Request review
 
 ## Areas for Contribution
 
-### Simulation
-- New agent types and behaviors
-- Environmental events
-- Economic mechanics
-- Skill tree expansions
-
-### Performance
-- Async optimization
-- Caching strategies
-- Memory efficiency
-- Tick engine improvements
+### Workers
+- New worker types (designers, analysts, DevOps)
+- Worker communication protocols
+- Skill improvements
+- Worker isolation improvements
 
 ### API
 - New endpoints
-- Middleware
-- WebSocket real-time events
+- WebSocket real-time updates
 - Rate limiting
+- Authentication
+
+### Performance
+- Async optimization
+- Task queue improvements
+- Memory efficiency
+- Connection pooling
 
 ### Infrastructure
 - CI/CD pipelines
@@ -121,7 +120,7 @@ black src/ tests/
 
 ## Questions?
 
-- Open an issue with the `question` label
+- Open an issue
 - Contact: matteohermesai@gmail.com
 
 ---
