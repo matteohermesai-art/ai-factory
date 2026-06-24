@@ -1,121 +1,99 @@
-# Agent Configuration Files
+# Agent Configurations
 
-This directory contains configuration and documentation for each AI agent worker in the factory.
+This document describes all AI agent workers in the AI Factory.
 
-## Agent Workers
+## Overview
+
+AI Factory uses a multi-agent architecture where specialized workers collaborate under the orchestration of Hermes.
+
+```
+            HERMES (Orchestrator)
+           /         |          \
+          v          v          v
+    SCITHERON     PAVARD     [Future]
+    (Python)      (Swift)    (Agents)
+```
+
+## Workers
 
 ### SCITHERON — Expert Python Developer
 
-```markdown
-# SCITHERON.md
+| Field | Value |
+|-------|-------|
+| **Role** | Simulation Engineer & Python Expert |
+| **Model** | claude-sonnet-4-20250514 |
+| **Tools** | terminal, file, browser, web_search, delegate_task |
+| **Max Tasks** | 3 concurrent |
+| **Skills** | python-debug, software-development, github, test-driven-development |
 
-## Identity
-- **Name**: SCITHERON
-- **Role**: Expert Python Developer & Simulation Engineer
-- **Specialty**: AsyncIO, FastAPI, data modeling, simulation design
-
-## Capabilities
+**Responsibilities:**
 - Design and implement Neon City simulation engine
 - Build REST APIs with FastAPI
 - Write comprehensive test suites
-- Optimize performance (async patterns, memory management)
+- Optimize async patterns and memory management
 - Database design with SQLAlchemy + Alembic
 
-## Workspace
-- `workspace/scitheron/` — Project files
-- `workspace/scitheron/memory/` — Persistent notes
-- `workspace/scitheron/output/` — Generated artifacts
-
-## Runtime Config
-```yaml
-agent: SCITHERON
-model: claude-sonnet-4-20250514
-tools: [terminal, file, browser, web_search]
-max_concurrent_tasks: 3
-memory_enabled: true
-skills: [software-development, python-debug, github]
-```
+**Workspace:** `workspace/scitheron/`
 
 ---
 
 ### PAVARD — Full-Stack Swift Developer
 
-```markdown
-# PAVARD.md
+| Field | Value |
+|-------|-------|
+| **Role** | Native App Developer (macOS/iOS) |
+| **Model** | claude-sonnet-4-20250514 |
+| **Tools** | terminal, file, browser, web_search |
+| **Max Tasks** | 2 concurrent |
+| **Skills** | software-development, github |
 
-## Identity
-- **Name**: PAVARD
-- **Role**: Full-Stack Swift Developer
-- **Specialty**: SwiftUI, Vapor, iOS/macOS apps, system programming
-
-## Capabilities
+**Responsibilities:**
 - Build native macOS/iOS admin tools for Neon City
 - Create Swift-based monitoring dashboards
 - Write Vapor-based API alternatives
 - Performance profiling and optimization
 
-## Workspace
-- `workspace/pavard/` — Xcode projects
-- `workspace/pavard/memory/` — Persistent notes
-
-## Runtime Config
-```yaml
-agent: PAVARD
-model: claude-sonnet-4-20250514
-tools: [terminal, file, browser]
-max_concurrent_tasks: 2
-memory_enabled: true
-skills: [software-development, swift-debug]
-```
+**Workspace:** `workspace/pavard/`
 
 ---
 
 ### HERMES — AI Assistant & Orchestrator
 
-```markdown
-# HERMES.md
+| Field | Value |
+|-------|-------|
+| **Role** | Primary AI Assistant & Factory Orchestrator |
+| **Model** | openrouter/owl-alpha |
+| **Tools** | All tools (terminal, file, browser, web_search, computer_use, cronjob, delegate_task) |
+| **Max Tasks** | 5 concurrent |
+| **Skills** | hermes-agent, github, software-development, research, terminal |
 
-## Identity
-- **Name**: HERMES
-- **Role**: AI Assistant & Factory Orchestrator
-- **Specialty**: Multi-agent coordination, skill execution, scheduling
-
-## Capabilities
+**Responsibilities:**
 - Coordinate SCITHERON and PAVARD workers
 - Manage GitHub repository (issues, PRs, CI/CD)
 - Run simulations and analyze results
 - Schedule cron jobs for background tasks
 - Computer use for desktop automation
+- Memory persistence across sessions
 
-## Workspace
-- `workspace/hermes/` — Orchestration files
-- `workspace/hermes/memory/` — Cross-session memory
-- `workspace/hermes/skills/` — Custom skill definitions
-
-## Runtime Config
-```yaml
-agent: HERMES
-model: openrouter/owl-alpha
-tools: [terminal, file, browser, web_search, computer_use, cronjob, delegation]
-max_concurrent_tasks: 5
-memory_enabled: true
-skills: [hermes-agent, github, software-development, research]
-```
+**Workspace:** `workspace/hermes/`
 
 ---
 
-## Agent Communication Protocol
-
-Agents communicate via the factory-api:
+## Communication Protocol
 
 1. **Task Assignment**: Hermes delegates via `delegate_task`
-2. **State Sharing**: Agents persist state in `workspaces/`
-3. **Results**: Agents report output in `workspace/output/`
+2. **State Sharing**: Agents persist state in `workspace/<agent>/memory/`
+3. **Results**: Agent reports output in `workspace/<agent>/output/`
 4. **Memory**: Hermes stores persistent facts in `~/.hermes/memory/`
 
 ## Adding New Agents
 
-1. Create `agents/AGENT_NAME.md` with identity and config
-2. Create `workspace/AGENT_NAME/` for workspace
+1. Create `agents/<NAME>.md` with identity and config
+2. Create `workspace/<NAME>/` for workspace
 3. Add agent config to `factory-api/agents.py`
 4. Update this README with the new agent
+5. Add agent-specific skills to `skills/`
+
+---
+
+*Last updated: 2025-06-24*
