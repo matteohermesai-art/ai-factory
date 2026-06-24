@@ -5,6 +5,21 @@ All notable changes to AI Factory will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-06-24
+
+### Added
+- Auto database initialization via Docker entrypoint
+- SQLAlchemy models: Worker, Task, CronJob, WorkspaceFile, Memory
+- `scripts/init-db.py` — idempotent table creation
+- `docker-entrypoint.sh` — waits for DB, creates tables, starts API
+- Database section in README and STARTUP guides
+- Database table documentation
+
+### Changed
+- Docker entrypoint now auto-creates tables (no manual `make init-db` needed)
+- Makefile: removed `init-db` and `seed` targets (now automatic)
+- Updated docker-compose with longer start period for DB init
+
 ## [2.0.0] - 2025-06-24
 
 ### Added
@@ -21,12 +36,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Worker configuration files (SCITHERON, PAVARD, HERMES)
 - Multi-stage Dockerfile with healthcheck
 - pyproject.toml with complete tool configuration
-
-### Architecture
-- AsyncIO-based task queue
-- Worker isolation with separate workspaces
-- Skill loading on-demand via SKILL.md format
-- RESTful API for all operations
 
 ## [1.0.0] - 2025-01-15
 

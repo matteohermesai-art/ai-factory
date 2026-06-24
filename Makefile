@@ -1,6 +1,6 @@
 # Makefile - AI Factory
 
-.PHONY: help up down restart test lint format init-db logs status clean shell
+.PHONY: help up down restart test lint format logs status clean shell
 
 # Default target
 help: ## Show this help
@@ -10,7 +10,7 @@ help: ## Show this help
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
 # Docker
-up: ## Start all services
+up: ## Start all services (auto-initializes DB)
 	docker-compose up -d --build
 	@echo "Services started -> http://localhost:8000/docs"
 
@@ -24,11 +24,6 @@ logs: ## View logs from all services
 
 status: ## Show service status
 	docker-compose ps
-
-# Database
-init-db: ## Initialize database and run migrations
-	docker-compose exec api alembic upgrade head
-	@echo "Database initialized"
 
 shell: ## Open shell in API container
 	docker-compose exec api bash
@@ -58,6 +53,6 @@ clean: ## Remove build artifacts
 	rm -rf htmlcov .coverage 2>/dev/null || true
 	@echo "Cleaned!"
 
-clean-all: ## Remove everything including volumes
+clean-all: ## Remove everything including DB volumes
 	docker-compose down -v --rmi all 2>/dev/null || true
 	make clean

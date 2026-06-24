@@ -2,7 +2,6 @@
 version: "3.9"
 
 services:
-  # AI Factory API
   api:
     build:
       context: .
@@ -27,11 +26,10 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
+      start_period: 30s
     networks:
       - net
 
-  # PostgreSQL Database
   db:
     image: postgres:16-alpine
     container_name: ai-factory-db
@@ -44,7 +42,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_is_ready -U neon -d neoncity"]
+      test: ["CMD-SHELL", "pg_isready -U neon -d neoncity"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -53,7 +51,6 @@ services:
     networks:
       - net
 
-  # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: ai-factory-redis

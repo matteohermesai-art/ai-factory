@@ -8,6 +8,7 @@ A framework for building, deploying, and orchestrating autonomous AI agent worke
 - **Skill system** — procedural memory via markdown-based SKILL.md definitions
 - **Worker delegation** — spawn sub-agents for parallel task execution
 - **Cron scheduling** — background jobs with recurring schedules
+- **Auto database init** — tables created automatically on first startup
 - **REST API** — full control and monitoring via FastAPI
 - **Docker infrastructure** — production-ready containerized deployment
 - **Structured logging** — JSON logs with analytics pipeline
@@ -51,7 +52,7 @@ A framework for building, deploying, and orchestrating autonomous AI agent worke
 | `worker/` | Background scheduler and task queue |
 | `skills/` | Hermes skill definitions (procedural memory) |
 | `agents/` | Worker configuration files and runtime specs |
-| `persistence/` | State storage for workspaces and agent memory |
+| `persistence/` | SQLAlchemy models, repositories, session |
 | `logging/` | Structured logging with structlog |
 
 ## Quick Start
@@ -61,7 +62,7 @@ A framework for building, deploying, and orchestrating autonomous AI agent worke
 git clone https://github.com/matteohermesai-art/ai-factory.git
 cd ai-factory
 
-# Start with Docker
+# Start with Docker (auto-initializes DB)
 make up
 
 # Or local
@@ -71,11 +72,36 @@ pip install -r requirements.txt
 python -m src.main
 ```
 
+## Database
+
+Tables are **automatically created** on first startup via the Docker entrypoint.
+
+| Table | Purpose |
+|-------|---------|
+| `workers` | Worker configuration and state |
+| `tasks` | Task assignments with status tracking |
+| `cron_jobs` | Scheduled recurring jobs |
+| `workspace_files` | Tracked files in agent workspaces |
+| `memory` | Persistent memory entries for workers |
+
+### Manual DB init
+
+```bash
+python scripts/init-db.py
+```
+
+### Reset database
+
+```bash
+make down        # Stop and remove containers + volumes
+make up          # Recreate with fresh database
+```
+
 ## Available Commands
 
 | Command | Description |
 |---------|-------------|
-| `make up` | Start all Docker services |
+| `make up` | Start all Docker services (auto-inits DB) |
 | `make down` | Stop all services |
 | `make test` | Run full test suite |
 | `make lint` | Lint and format code |
@@ -94,7 +120,7 @@ cp .env.example .env
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DATABASE_URL` | `sqlite+aiosqlite:///ai-factory.db` | Database connection |
+| `DATABASE_URL` | `postgresql+asyncpg://neon:neon@db:5432/neoncity` | Database connection |
 | `REDIS_URL` | `redis://redis:6379` | Redis cache URL |
 | `LOG_LEVEL` | `info` | Logging level |
 | `API_PORT` | `8000` | API server port |
@@ -114,8 +140,6 @@ cp .env.example .env
 | `GET` | `/api/tasks/{id}` | Task details |
 | `GET` | `/api/cron/` | List cron jobs |
 | `POST` | `/api/cron/` | Create cron job |
-| `DELETE` | `/api/cron/{id}` | Delete cron job |
-| `GET` | `/api/skills/` | List available skills |
 | `GET` | `/api/workspace/{worker}` | List worker workspace files |
 
 Interactive API docs at `http://localhost:8000/docs`.
@@ -125,6 +149,7 @@ Interactive API docs at `http://localhost:8000/docs`.
 - **Python 3.11+** with AsyncIO
 - **FastAPI** REST framework
 - **SQLAlchemy 2.0** + aiosqlite (dev) / asyncpg (prod)
+- **PostgreSQL 16** database
 - **Redis** cache and message broker
 - **Alembic** database migrations
 - **structlog** structured logging
@@ -137,18 +162,9 @@ Interactive API docs at `http://localhost:8000/docs`.
 ai-factory/
 ├── src/                   # Source code
 │   ├── api/               # FastAPI app and routes
-│   │   ├── routes/
-│   │   ├── schemas.py
-│   │   └── app.py
 │   ├── worker/            # Task scheduler and queue
-│   │   └── scheduler.py
-│   ├── persistence/       # State storage
-│   │   ├── models.py
-│   │   ├── repository.py
-│   │   └── session.py
+│   ├── persistence/       # Database models and storage
 │   ├── logging/           # Structured logging
-│   │   ├── structured.py
-│   │   └── analytics.py
 │   ├── config.py          # Configuration management
 │   └── main.py            # Application entry point
 ├── agents/                # Worker configurations
@@ -157,12 +173,12 @@ ai-factory/
 │   ├── HERMES.md          # AI orchestrator worker
 │   └── AGENT_CONFIGS.md   # All worker docs
 ├── skills/                # Hermes skill definitions
-│   ├── HERMES_SETUP.md    # Post-install setup prompt
-│   └── SKILL_DEFINITIONS.md
+├── scripts/
+│   ├── init-db.py         # Database table creation
+│   └── seed.py            # Seed initial workers
 ├── tests/                 # Test suite (pytest)
-├── scripts/               # Utility scripts
 ├── infra/                 # Infrastructure docs
-│   └── DOCKER.md
+├── docker-entrypoint.sh   # Auto-DB init on container start
 ├── docker-compose.yml     # Full stack
 ├── Dockerfile             # Multi-stage build
 ├── Makefile               # Build targets
@@ -182,11 +198,11 @@ Coordinates other workers, manages schedules, and handles task delegation. Has f
 
 ### SCITHERON — Python Developer
 
-Specializes in Python development: backend APIs, async code, testing, code reviews, and documentation. Uses `terminal`, `file`, `browser`, and `web_search` tools.
+Specializes in Python development: backend APIs, async code, testing, code reviews, and documentation.
 
 ### PAVARD — Swift Developer
 
-Specializes in Swift development: iOS/macOS apps, SwiftUI, Vapor server-side, and system programming. Uses `terminal`, `file`, and `browser` tools.
+Specializes in Swift development: iOS/macOS apps, SwiftUI, Vapor server-side, and system programming.
 
 ## Skills
 
@@ -195,8 +211,8 @@ Skills are markdown-based procedural memory. Each skill is a `SKILL.md` file tha
 | Skill | Purpose |
 |-------|---------|
 | `hermes-agent` | Self-management and configuration |
-| `github` | GitHub operations (issues, PRs, repos) |
-| `software-development` | Code quality, testing, review |
+| `github` | GitHub operations |
+| `software-development` | Code quality, testing |
 | `research` | Web search and analysis |
 | `python-debug` | Python debugging with pdb |
 | `systematic-debugging` | 4-phase root cause analysis |
