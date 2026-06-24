@@ -1,0 +1,55 @@
+services:
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: ai-postgres
+    restart: unless-stopped
+    env_file:
+      - ../.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - ../data/postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: ai-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio
+    container_name: ai-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    env_file:
+      - ../.env
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - ../data/minio:/data
+
+  ollama:
+    image: ollama/ollama
+    container_name: ai-ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - /media/orin/DATA1/ollama:/root/.ollama
+
+
+  n8n:
+    image: n8nio/n8n
+    container_name: ai-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+
+volumes:
+  ollama_data:
+  n8n_data:
